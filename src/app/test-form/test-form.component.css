@@ -1,0 +1,9 @@
+.required {
+  color: red;
+  font-weight: bold;
+}
+#success {
+  color: white;
+  background-color:green;
+  padding:16px;
+}

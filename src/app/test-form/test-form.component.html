@@ -1,0 +1,196 @@
+<!-- Success box
+     Displays when all fields validate correctly.
+-->
+<div *ngIf="!testForm.errors" id="success">You have filled in all the fields correctly</div>
+
+<!--
+*
+* Test form in Angular
+*
+-->
+<form [formGroup]="testForm" (ngSubmit)="onSubmit()">
+  <div>
+    <!--
+    *
+    * First name  - required, max length 30.
+    *
+    -->
+    <label for="input-first">First Name: </label>
+    <span class="required"> * </span>
+    <input id="input-first" type="text" formControlName="firstName" maxlength="30">
+
+    <!-- If:
+          1.) the field has been visited
+          2.) and has lost focus while empty,
+          Then reveal error text.
+          However, once focus is lost once, error text is real time while typing.
+    -->
+    <div id="error-first" class="required"
+         *ngIf="testForm.controls.firstName.touched && testForm.controls.firstName.invalid">
+      Please type your first name.
+    </div>
+  </div>
+  <div>
+    <!--
+    *
+    * Last name - required, max length 30.
+    *
+    -->
+    <label for="input-last">Last Name: </label>
+    <span class="required"> * </span>
+    <input id="input-last" type="text" formControlName="lastName" maxlength="30">
+
+    <!-- If:
+          1.) the field has been visited
+          2.) and has lost focus while empty,
+          Then reveal error text.
+          However, once focus is lost once, error text is real time while typing.
+    -->
+    <div class="required" *ngIf="testForm.controls.lastName.touched && testForm.controls.lastName.invalid">
+      Please type your last name.
+    </div>
+  </div>
+  <div>
+    <!--
+    *
+    * Phone - required, numeric-only, max length 30.
+    *
+    -->
+    <label for="input-phone">Phone: </label>
+    <span class="required"> * </span>
+    <input id="input-phone" type="text" (keypress)="keyPressNumeric($event)" formControlName="phone" maxlength="30">
+
+    <!-- If:
+          1.) the field has been visited
+          2.) and has lost focus while empty,
+          Then reveal error text.
+          However, once focus is lost once, error text is real time while typing.
+    -->
+    <div class="required" *ngIf="testForm.controls.phone.touched && testForm.controls.phone.invalid">
+      Please type your phone number.
+    </div>
+  </div>
+  <div>
+    <!--
+    *
+    * Email - required, max length 50, & must be valid email address.
+    *
+    -->
+    <label for="input-email">Email: </label>
+    <span class="required"> * </span>
+    <input id="input-email" #email type="text" formControlName="email" maxlength="50">
+
+    <!-- If:
+          1.) the field has been visited
+          2.) and has lost focus while empty,
+          Then reveal specific error text.
+    -->
+    <div class="required" *ngIf="testForm.controls.email.touched && testForm.controls.email.errors?.required">
+      Please type your email address.
+    </div>
+
+    <!-- If:
+          1.) the field has been visited
+          2.) and has lost focus without a valid email address
+          Then reveal specific error text.
+    -->
+    <div class="required" *ngIf="testForm.controls.email.touched && testForm.controls.email.errors?.pattern">
+      Please type a valid email address.
+    </div>
+
+  </div>
+  <div>
+    <!--
+    *
+    * Promo code input - optional, alphanumeric only, max length 7.
+    * If specified, then the "How did you hear of us?" field becomes optional.
+    *
+    -->
+    <label for="input-promo">Promo Code: </label>
+    <input id="input-promo" #promo type="text" (keypress)="keyPressAlphaNumeric($event)" formControlName="promoCode" maxlength="7">
+  </div>
+  <div>
+    <!--
+    *
+    * "How did you hear of us?"
+    * Required field unless promo code is specified.
+    *
+    -->
+    <label for="input-how">How did you hear of us?: </label>
+
+    <!-- The "How did you hear.." required asterisk will display if promo code is empty.
+    -->
+    <span class="required" *ngIf="promo.value ==''">* </span>
+    <select id="input-how" #how formControlName="how">
+      <option value="" selected>Please choose...</option>
+
+      <!-- Populate "How did you hear.." options from array (See component for strings.)
+      -->
+      <option *ngFor="let howstring of howstrings"
+              [value] = "howstring">
+              {{howstring}}
+      </option>
+    </select>
+    <!-- If:
+          1.) Nothing has been selected for "How did you hear.."
+          1.) And the promo code has not been specified
+          2.) And the field has been visited or changed
+          Then reveal error text.
+    -->
+    <div class="required" *ngIf="promo.value=='' &&
+                    (testForm.controls.how.dirty || testForm.controls.how.touched)
+                    && how.value==''">
+      Please tell us how you heard of us.
+    </div>
+  </div>
+ <!--
+  *
+  * "How did you hear of us?" - OTHER
+  * Required field if "Other" selected "How did you hear.." dropdown
+  *
+  -->
+  <div *ngIf="how.value=='Other'">
+    <div><label for="input-how-other">Please Specify:</label>
+    <span class="required"> * </span></div>
+    <textarea id="input-how-other" #howOther rows="5" cols="40" formControlName="howOther"></textarea>
+
+    <!-- If:
+          1.) The textarea has been visited
+          2.) And has lost focus while empty
+          Then reveal error text.
+          However, once focus is lost once, error text is real time while typing.
+    -->
+    <div class="required" *ngIf="testForm.controls.howOther.touched && testForm.controls.howOther.invalid">
+      Please tell us how you heard of us.
+    </div>
+  </div>
+  <div>
+    <!--
+    *
+    * Accept Terms & Conditions checkbox, required.
+    * i.e., Visitor must check to box to submit the form.
+    *
+    -->
+    <label for="input-terms">Accept Terms & Conditions: </label>
+    <input id="input-terms" type="checkbox" #terms formControlName="terms">
+
+    <!-- If the checkbox has been visited or changed
+          and has lost focus while unchecked, reveal error text.
+          However, once focus is lost once, error text is real time while typing.
+    -->
+    <div class="required" *ngIf="(testForm.controls.terms.touched || testForm.controls.terms.dirty)
+                                    && !terms.checked">
+      Please accept the Terms & Conditions.
+    </div>
+
+  </div>
+  <!--
+  *
+  * Submit button (Disabled for this test)
+  * Triggers form's onsubmit event when clicked (handled by onSubmit().
+  *
+  -->
+  <div>
+    <button type="submit" onclick="return false;">Submit</button>
+  </div>
+</form>
